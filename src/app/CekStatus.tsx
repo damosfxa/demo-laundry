@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { IkonStatus } from "@/components/IkonStatus";
-import { formatTanggal, namaLayanan, namaStatus, normalisasiKode, perkiraanSelesai, STATUS } from "@/lib/nota";
+import { formatBerat, formatTanggal, namaLayanan, namaStatus, normalisasiKode, perkiraanSelesai, STATUS } from "@/lib/nota";
 import { useDaftarNota } from "@/lib/penyimpanan";
 
 export function CekStatus({ nota }: { nota: string }) {
@@ -99,7 +99,7 @@ export function CekStatus({ nota }: { nota: string }) {
             <div>
               <dt className="text-stone-500">Layanan</dt>
               <dd className="font-medium">
-                {namaLayanan(data.layanan)}, {data.berat} kg
+                {namaLayanan(data.layanan)}, {formatBerat(data.berat)}
               </dd>
             </div>
             <div>

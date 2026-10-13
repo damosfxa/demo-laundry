@@ -89,3 +89,12 @@ export function ubahStatus(kode: string, status: StatusKode) {
 export function resetDataContoh() {
   simpan(buatDataContoh());
 }
+
+// Nomor nota otomatis: lanjut dari nomor LDY-xxxx terbesar
+export function tambahNota(data: Pick<Nota, "nama" | "hp" | "layanan" | "berat">): string {
+  const daftar = baca();
+  const terbesar = Math.max(1000, ...daftar.map((n) => Number(n.kode.replace("LDY-", "")) || 0));
+  const kode = `LDY-${terbesar + 1}`;
+  simpan([{ ...data, kode, status: "diterima", created_at: new Date().toISOString() }, ...daftar]);
+  return kode;
+}

@@ -7,18 +7,14 @@ export function CatatanDemo() {
         aplikasi untuk laundry Anda dibuat menyesuaikan kebutuhan: nama dan logo, jenis layanan, tahapan status, isi
         pesan WhatsApp, sampai fitur tambahan yang diperlukan.
       </p>
-      <p>
-        Dibuat oleh{" "}
-        <a
-          href="https://rizkyrhamadani.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-teal-700 underline"
-        >
-          Rizky Rhamadani
-        </a>
-        .
-      </p>
+      <a
+        href="https://rizkyrhamadani.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 block rounded-xl bg-teal-700 px-4 py-3 text-center font-semibold text-white hover:bg-teal-800"
+      >
+        Mau versi untuk laundry Anda? Hubungi Rizky
+      </a>
     </footer>
   );
 }

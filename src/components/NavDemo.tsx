@@ -11,7 +11,7 @@ const TAB = [
 const PETUNJUK: Record<string, string> = {
   "/": "Ini demo. Coba ketik nomor nota LDY-1002, lalu buka tab Pemilik untuk mengubah statusnya.",
   "/pemilik":
-    "Ubah status salah satu cucian, tekan Kabari untuk melihat pesan WhatsApp-nya, lalu cek hasilnya di tab Pelanggan.",
+    "Coba tambah nota baru atau ubah status cucian, tekan Kabari untuk melihat pesan WhatsApp-nya, lalu cek hasilnya di tab Pelanggan.",
 };
 
 export function NavDemo() {

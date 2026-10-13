@@ -83,3 +83,8 @@ export function pesanWa(nota: Nota, alamat: string): string {
 export function linkWa(nota: Nota, alamat: string): string {
   return `https://wa.me/${nomorWa(nota.hp)}?text=${encodeURIComponent(pesanWa(nota, alamat))}`;
 }
+
+// 2.5 menjadi "2,5 kg"
+export function formatBerat(berat: number): string {
+  return `${berat.toLocaleString("id-ID")} kg`;
+}

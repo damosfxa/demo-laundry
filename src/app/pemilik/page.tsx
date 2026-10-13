@@ -3,18 +3,41 @@
 import { useState } from "react";
 import { IkonWa } from "@/components/IkonWa";
 import { StatusBadge } from "@/components/StatusBadge";
-import { linkWa, namaLayanan, pesanWa, STATUS, type Nota, type StatusKode } from "@/lib/nota";
-import { resetDataContoh, ubahStatus, useDaftarNota } from "@/lib/penyimpanan";
+import { formatBerat, LAYANAN, linkWa, namaLayanan, pesanWa, STATUS, type Nota, type StatusKode } from "@/lib/nota";
+import { resetDataContoh, tambahNota, ubahStatus, useDaftarNota } from "@/lib/penyimpanan";
 
 export default function HalamanPemilik() {
   const daftar = useDaftarNota();
   const [kodePratinjau, setKodePratinjau] = useState<string | null>(null);
+  const [formTerbuka, setFormTerbuka] = useState(false);
   // Ambil dari daftar terbaru supaya pesan ikut status yang baru diubah
   const pratinjau = daftar?.find((n) => n.kode === kodePratinjau) ?? null;
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-bold">Daftar cucian</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold">Daftar cucian</h1>
+        {!formTerbuka && (
+          <button
+            type="button"
+            onClick={() => setFormTerbuka(true)}
+            className="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+          >
+            + Nota baru
+          </button>
+        )}
+      </div>
+
+      {formTerbuka && (
+        <FormNotaBaru
+          batal={() => setFormTerbuka(false)}
+          selesai={(kode) => {
+            setFormTerbuka(false);
+            // Langsung tampilkan pesan WA untuk nota yang baru dibuat
+            setKodePratinjau(kode);
+          }}
+        />
+      )}
 
       <section className="space-y-3">
         {daftar?.map((n) => (
@@ -23,7 +46,7 @@ export default function HalamanPemilik() {
               <div className="min-w-0">
                 <p className="truncate font-bold">{n.nama}</p>
                 <p className="text-sm text-stone-500">
-                  <span className="font-mono">{n.kode}</span> · {namaLayanan(n.layanan)}, {n.berat} kg
+                  <span className="font-mono">{n.kode}</span> · {namaLayanan(n.layanan)}, {formatBerat(n.berat)}
                 </p>
               </div>
               <StatusBadge status={n.status} />
@@ -112,5 +135,78 @@ function PratinjauWa({ nota, tutup }: { nota: Nota; tutup: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+const kelasInput =
+  "w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100";
+
+function FormNotaBaru({ batal, selesai }: { batal: () => void; selesai: (kode: string) => void }) {
+  const [error, setError] = useState("");
+
+  function kirim(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const nama = String(data.get("nama") ?? "").trim().slice(0, 60);
+    const hp = String(data.get("hp") ?? "").replace(/[^0-9+]/g, "").slice(0, 16) || null;
+    const layanan = String(data.get("layanan") ?? "");
+    const berat = Math.round(Number(String(data.get("berat") ?? "").replace(",", ".")) * 10) / 10;
+
+    if (!nama || !LAYANAN.some((l) => l.kode === layanan) || !(berat > 0) || berat > 200) {
+      setError("Lengkapi nama, layanan, dan berat (maksimal 200 kg).");
+      return;
+    }
+    selesai(tambahNota({ nama, hp, layanan, berat }));
+  }
+
+  return (
+    <form onSubmit={kirim} className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-2 ring-teal-600">
+      <div className="space-y-1">
+        <h2 className="text-lg font-bold">Nota baru</h2>
+        <p className="text-sm text-stone-500">Nomor nota dibuat otomatis.</p>
+      </div>
+
+      <label className="block space-y-2">
+        <span className="text-sm font-medium">Nama pelanggan</span>
+        <input name="nama" required maxLength={60} autoComplete="off" className={kelasInput} />
+      </label>
+      <label className="block space-y-2">
+        <span className="text-sm font-medium">
+          Nomor WhatsApp <span className="font-normal text-stone-400">(opsional)</span>
+        </span>
+        <input name="hp" type="tel" inputMode="tel" placeholder="08xxxxxxxxxx" maxLength={16} className={kelasInput} />
+      </label>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block space-y-2">
+          <span className="text-sm font-medium">Layanan</span>
+          <select name="layanan" defaultValue="cuci-kering" className={kelasInput}>
+            {LAYANAN.map((l) => (
+              <option key={l.kode} value={l.kode}>
+                {l.nama}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm font-medium">Berat (kg)</span>
+          <input name="berat" inputMode="decimal" required placeholder="3,5" className={kelasInput} />
+        </label>
+      </div>
+
+      {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={batal}
+          className="rounded-xl bg-stone-100 py-3 font-semibold text-stone-700 hover:bg-stone-200"
+        >
+          Batal
+        </button>
+        <button type="submit" className="rounded-xl bg-teal-700 py-3 font-semibold text-white hover:bg-teal-800">
+          Simpan nota
+        </button>
+      </div>
+    </form>
   );
 }
