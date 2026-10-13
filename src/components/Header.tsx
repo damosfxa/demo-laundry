@@ -9,7 +9,10 @@ export function Header({ subjudul, kanan }: { subjudul?: string; kanan?: React.R
           {TOKO.inisial}
         </span>
         <span className="leading-tight">
-          <span className="block font-bold text-stone-900">{TOKO.nama}</span>
+          <span className="flex items-center gap-2 font-bold text-stone-900">
+            {TOKO.nama}
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">Contoh</span>
+          </span>
           <span className="block text-sm text-stone-500">{subjudul ?? TOKO.tagline}</span>
         </span>
       </Link>
